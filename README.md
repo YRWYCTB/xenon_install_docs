@@ -1,11 +1,11 @@
-## 标题： 利用xenon实现MySQL的高可用切换
+# 标题： 利用xenon实现MySQL的高可用切换
 
 目标： 现有的复制结构利用xenon提供MySQL高可用解决方案
 
 https://github.com/radondb/xenon
 
 
-# 0. 环境介绍
+## 0. 环境介绍
    dzst150 : 172.18.0.160:3336 master
    
    dzst151 : 172.18.0.151:3336 slave
@@ -14,11 +14,11 @@ https://github.com/radondb/xenon
 
    服务IP： 172.18.0.200
 
-# 1. MySQL安装准备
+## 1. MySQL安装准备
 
-   1.1 MySQL 5.7.30 GTID 复制结构搭建
+### 1.1 MySQL 5.7.30 GTID 复制结构搭建
    
-   1.2 MySQL 5.7.30 半同步插件加载 
+### 1.2 MySQL 5.7.30 半同步插件加载 
 ```sql
      set global super_read_only=0;
      set global read_only=0; 
@@ -42,7 +42,7 @@ rpl_semi_sync_master_enabled =1
  MASTER_PORT=3336,
  MASTER_AUTO_POSITION = 1;
 ```
-1.3 处理MySQL的帐号,由原来的/sbin/nologin -> /bin/bash， 修改mysql用户的密码
+### 1.3 处理MySQL的帐号,由原来的/sbin/nologin -> /bin/bash， 修改mysql用户的密码
    
 ```sh
     chsh mysql
@@ -66,7 +66,7 @@ rpl_semi_sync_master_enabled =1
 	mkdri /home/mysql
 	chown -R mysql:mysql 
 ```
-1.4 做基于mysql帐号的ssh信任 -> xenon 
+### 1.4 做基于mysql帐号的ssh信任 -> xenon 
 
 151:
 ```sh
@@ -89,9 +89,9 @@ rpl_semi_sync_master_enabled =1
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.151
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.152
 ```
-2. xenon下载编译
+## 2. xenon下载编译
 
-2.1 下载编译xenon
+### 2.1 下载编译xenon
 ```sh
    golang -> echo "export PATH=$PATH:/usr/local/go/bin" >>/etc/profile 
    source /etc/profile 
@@ -112,14 +112,14 @@ rpl_semi_sync_master_enabled =1
 	cp -r xenon /data/
 	chown -R mysql:mysql /data/xenon
 ```
-2.2 给运行xenon的帐号mysql添加sudo /usr/ip 权限
+### 2.2 给运行xenon的帐号mysql添加sudo /usr/ip 权限
 ```sh
    visudo 
    mysql   ALL=(ALL)       NOPASSWD: /usr/sbin/ip
 ```
-2.3 安装xtrabackup 
+### 2.3 安装xtrabackup 
 
-2.4 启动Xenon组成集群
+### 2.4 启动Xenon组成集群
       
 启动xenon，需要在所有节点执行
 
@@ -193,7 +193,7 @@ rpl_semi_sync_master_enabled =1
 ```sh
 ./bin/xenoncli cluster add 172.18.0.160:8801,172.18.0.151:8801,172.18.0.152:8801
 ```
-3. 检验环境
+## 3. 检验环境
 ```sh
 [root@dzst160 bin]# mysql -utian -p -h172.18.0.200 -P 3336
 Enter password: 
@@ -290,7 +290,7 @@ bin  raft.meta  xenon.json  xenon.log
 -bash-4.2$ 
 ```
 
-4. 限制
+ ## 4. 限制
   1. MySQL  5.7 版本 GTID 半同步
   2. xenon, mysql跑在同一个帐号下， 这个帐号需要有Shell
   3. 使用mysqld_safe启用mysql
