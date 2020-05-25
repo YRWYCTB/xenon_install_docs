@@ -25,12 +25,13 @@ https://github.com/radondb/xenon
      INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';
      INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';
 ```
-	 启动半同步:
-	 配置文件中增加：
-   
-	rpl_semi_sync_slave_enabled  =1
+启动半同步:
+
+配置文件中增加：
+
+rpl_semi_sync_slave_enabled  =1
   
-	rpl_semi_sync_master_enabled =1
+rpl_semi_sync_master_enabled =1
 
 使用如下用户配置主从	
 ```sql
@@ -47,46 +48,50 @@ https://github.com/radondb/xenon
     chsh mysql
     Changing shell for mysql.
     New shell [/sbin/nologin]: /bin/bash
-	Shell changed.
+    Shell changed.
 	
-	[root@dzst160 ~]# passwd mysql
-	Changing password for user mysql.
-	New password: 
-	BAD PASSWORD: The password is shorter than 8 characters
-	Retype new password: 
-	passwd: all authentication tokens updated successfully.
+    [root@dzst160 ~]# passwd mysql
+    Changing password for user mysql.
+    New password: 
+    BAD PASSWORD: The password is shorter than 8 characters
+    Retype new password: 
+    passwd: all authentication tokens updated successfully.
 ```
-  用户名: mysql 
+用户名: mysql 
   
-	密码：mysql 
+密码：mysql 
   
-	创建mysql用户的家目录
+创建mysql用户的家目录
 ```sh
 	mkdri /home/mysql
 	chown -R mysql:mysql 
-	```
-   1.4 做基于mysql帐号的ssh信任 -> xenon ??需要看视频
-   151:
+```
+1.4 做基于mysql帐号的ssh信任 -> xenon 
+
+151:
 ```sh
    su - mysql
    ssh-keygen
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.160
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.152
-   
-   152:
+```
+152:
+```sh
    su - mysql
    ssh-keygen
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.160
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.151
-   
-   160:
+``` 
+160:
+```sh
    su - mysql
    ssh-keygen
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.151
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.152
 ```
 2. xenon下载编译
-   2.1 下载编译xenon
+
+2.1 下载编译xenon
 ```sh
    golang -> echo "export PATH=$PATH:/usr/local/go/bin" >>/etc/profile 
    source /etc/profile 
@@ -98,7 +103,7 @@ https://github.com/radondb/xenon
    cp -r conf/xenon-simple.conf.json xenon/xenon.json 
    echo "/etc/xenon/xenon.json" >xenon/bin/config.path 
 ```
-   #将二进制文件和配置文件拷贝到/etc目录下
+将二进制文件和配置文件拷贝到/etc目录下
 ```sh
    cp -r xenon /etc/
 ```
@@ -106,26 +111,25 @@ https://github.com/radondb/xenon
 ```sh
 	cp -r xenon /data/
 	chown -R mysql:mysql /data/xenon
-	```
-   2.2 给运行xenon的帐号mysql添加sudo /usr/ip 权限
+```
+2.2 给运行xenon的帐号mysql添加sudo /usr/ip 权限
 ```sh
    visudo 
    mysql   ALL=(ALL)       NOPASSWD: /usr/sbin/ip
 ```
-   2.3 安装xtrabackup 
-   2.4 启动Xenon组成集群
+2.3 安装xtrabackup 
+2.4 启动Xenon组成集群
     
    
-  启动，需要在所有节点执行
-	切换到 mysql 用户下执行
+启动，需要在所有节点执行
+    切换到 mysql 用户下执行
 ```sh
-	su - mysql
-	cd /data/xenon/
-	
-   ./bin/xenon -c /etc/xenon/xenon.json  >./xenon.log 2>&1 &
-```sh
-   
-```json
+ su - mysql
+ cd /data/xenon/
+ ./bin/xenon -c /etc/xenon/xenon.json  >./xenon.log 2>&1 &
+```
+/etc/xenon/xenon.json 配置文件内容如下  
+```
    {
         "server":
         {
@@ -187,8 +191,9 @@ https://github.com/radondb/xenon
 添加xenon的成员,需要在所有节点执行
 ```sh
 ./bin/xenoncli cluster add 172.18.0.160:8801,172.18.0.151:8801,172.18.0.152:8801
-
+```
 3. 检验环境
+```sh
 [root@dzst160 bin]# mysql -utian -p -h172.18.0.200 -P 3336
 Enter password: 
 
@@ -205,7 +210,8 @@ affiliates. Other names may be trademarks of their respective
 owners.
 
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
+```
+```sql
 mysql> \s
 --------------
 mysql  Ver 14.14 Distrib 5.7.30, for linux-glibc2.12 (x86_64) using  EditLine wrapper
@@ -229,8 +235,7 @@ Uptime:			1 hour 21 min 30 sec
 
 Threads: 3  Questions: 53  Slow queries: 0  Opens: 118  Flush tables: 2  Open tables: 10  Queries per second avg: 0.010
 --------------
-
-[root@dzst160 bin]# 
+```
 
 
 节点重建：
