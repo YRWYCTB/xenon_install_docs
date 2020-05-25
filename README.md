@@ -7,27 +7,24 @@ https://github.com/radondb/xenon
 
 0. 环境介绍
    dzst150 : 172.18.0.160:3336 master
-   dzst151 : 172.18.0.151:3336 slave 
+   
+   dzst151 : 172.18.0.151:3336 slave
+   
    dzst152 : 172.18.0.152:3336 slave 
 
    服务IP： 172.18.0.200
-   
-CHANGE MASTER TO
-MASTER_HOST='172.18.0.152',
-MASTER_USER='tian',
-MASTER_PASSWORD='8085782',
-MASTER_PORT=3336,
-MASTER_AUTO_POSITION = 1;
 
 1. MySQL安装准备
+
    1.1 MySQL 5.7.30 GTID 复制结构搭建
+   
    1.2 MySQL 5.7.30 半同步插件加载 
    ```sql
      set global super_read_only=0;
      set global read_only=0; 
      INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';
      INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';
-	 ```
+```
 	 启动半同步:
 	 配置文件中增加：
    
@@ -45,7 +42,8 @@ MASTER_AUTO_POSITION = 1;
 	MASTER_AUTO_POSITION = 1;
 ```
    1.3 处理MySQL的帐号,由原来的/sbin/nologin -> /bin/bash， 修改mysql用户的密码
-    ```sh
+   
+```sh
     chsh mysql
     Changing shell for mysql.
     New shell [/sbin/nologin]: /bin/bash
@@ -63,13 +61,13 @@ MASTER_AUTO_POSITION = 1;
 	密码：mysql 
   
 	创建mysql用户的家目录
-  ```sh
+```sh
 	mkdri /home/mysql
 	chown -R mysql:mysql 
 	```
    1.4 做基于mysql帐号的ssh信任 -> xenon ??需要看视频
    151:
-   ```sh
+```sh
    su - mysql
    ssh-keygen
    ssh-copy-id -i /home/mysql/.ssh/id_rsa.pub 172.18.0.160
@@ -89,7 +87,7 @@ MASTER_AUTO_POSITION = 1;
 ```
 2. xenon下载编译
    2.1 下载编译xenon
- ```sh
+```sh
    golang -> echo "export PATH=$PATH:/usr/local/go/bin" >>/etc/profile 
    source /etc/profile 
    git clone https://github.com/radondb/xenon 
@@ -105,12 +103,12 @@ MASTER_AUTO_POSITION = 1;
    cp -r xenon /etc/
 ```
 	#将二进制文件和配置文件拷贝到/data目录下
-  ```sh
+```sh
 	cp -r xenon /data/
 	chown -R mysql:mysql /data/xenon
 	```
    2.2 给运行xenon的帐号mysql添加sudo /usr/ip 权限
-   ```sh
+```sh
    visudo 
    mysql   ALL=(ALL)       NOPASSWD: /usr/sbin/ip
 ```
@@ -120,12 +118,12 @@ MASTER_AUTO_POSITION = 1;
    
   启动，需要在所有节点执行
 	切换到 mysql 用户下执行
-  ```sh
+```sh
 	su - mysql
 	cd /data/xenon/
 	
    ./bin/xenon -c /etc/xenon/xenon.json  >./xenon.log 2>&1 &
-   ```sh
+```sh
    
 ```json
    {
