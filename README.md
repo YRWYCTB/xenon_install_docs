@@ -1,4 +1,4 @@
-#标题： 利用xenon实现MySQL的高可用切换
+##标题： 利用xenon实现MySQL的高可用切换
 
 目标： 现有的复制结构利用xenon提供MySQL高可用解决方案
 
@@ -35,14 +35,14 @@ rpl_semi_sync_master_enabled =1
 
 使用如下用户配置主从	
 ```sql
-	CHANGE MASTER TO
-	MASTER_HOST='172.18.0.152',
-	MASTER_USER='tian',
-	MASTER_PASSWORD='8085782',
-	MASTER_PORT=3336,
-	MASTER_AUTO_POSITION = 1;
+ CHANGE MASTER TO
+ MASTER_HOST='172.18.0.152',
+ MASTER_USER='tian',
+ MASTER_PASSWORD='8085782',
+ MASTER_PORT=3336,
+ MASTER_AUTO_POSITION = 1;
 ```
-   1.3 处理MySQL的帐号,由原来的/sbin/nologin -> /bin/bash， 修改mysql用户的密码
+1.3 处理MySQL的帐号,由原来的/sbin/nologin -> /bin/bash， 修改mysql用户的密码
    
 ```sh
     chsh mysql
@@ -118,11 +118,12 @@ rpl_semi_sync_master_enabled =1
    mysql   ALL=(ALL)       NOPASSWD: /usr/sbin/ip
 ```
 2.3 安装xtrabackup 
+
 2.4 启动Xenon组成集群
-    
-   
-启动，需要在所有节点执行
-    切换到 mysql 用户下执行
+      
+启动xenon，需要在所有节点执行
+
+切换到 mysql 用户下执行
 ```sh
  su - mysql
  cd /data/xenon/
