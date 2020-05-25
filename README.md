@@ -19,7 +19,7 @@ https://github.com/radondb/xenon
    1.1 MySQL 5.7.30 GTID 复制结构搭建
    
    1.2 MySQL 5.7.30 半同步插件加载 
-   ```sql
+```sql
      set global super_read_only=0;
      set global read_only=0; 
      INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';
