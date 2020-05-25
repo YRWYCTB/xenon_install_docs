@@ -1,11 +1,11 @@
-##标题： 利用xenon实现MySQL的高可用切换
+## 标题： 利用xenon实现MySQL的高可用切换
 
 目标： 现有的复制结构利用xenon提供MySQL高可用解决方案
 
 https://github.com/radondb/xenon
 
 
-0. 环境介绍
+# 0. 环境介绍
    dzst150 : 172.18.0.160:3336 master
    
    dzst151 : 172.18.0.151:3336 slave
@@ -14,7 +14,7 @@ https://github.com/radondb/xenon
 
    服务IP： 172.18.0.200
 
-1. MySQL安装准备
+# 1. MySQL安装准备
 
    1.1 MySQL 5.7.30 GTID 复制结构搭建
    
