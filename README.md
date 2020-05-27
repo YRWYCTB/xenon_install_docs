@@ -6,7 +6,7 @@ https://github.com/radondb/xenon
 
 
 ## 0. 环境介绍
-   dzst150 : 172.18.0.160:3336 master
+   dzst160 : 172.18.0.160:3336 master
    
    dzst151 : 172.18.0.151:3336 slave
    
@@ -20,10 +20,10 @@ https://github.com/radondb/xenon
    
 ### 1.2 MySQL 5.7.30 半同步插件加载 
 ```sql
-     set global super_read_only=0;
-     set global read_only=0; 
-     INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';
-     INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';
+set global super_read_only=0;
+set global read_only=0; 
+INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';
+INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';
 ```
 启动半同步:
 
@@ -63,8 +63,8 @@ rpl_semi_sync_master_enabled =1
   
 创建mysql用户的家目录
 ```sh
-	mkdri /home/mysql
-	chown -R mysql:mysql 
+   mkdri /home/mysql
+   chown -R mysql:mysql 
 ```
 ### 1.4 做基于mysql帐号的ssh信任 -> xenon 
 
@@ -107,28 +107,33 @@ rpl_semi_sync_master_enabled =1
 ```sh
    cp -r xenon /etc/
 ```
-	#将二进制文件和配置文件拷贝到/data目录下
+将二进制文件和配置文件拷贝到/data目录下
 ```sh
-	cp -r xenon /data/
-	chown -R mysql:mysql /data/xenon
+   cp -r xenon /data/
+   chown -R mysql:mysql /data/xenon
 ```
 ### 2.2 给运行xenon的帐号mysql添加sudo /usr/ip 权限
 ```sh
    visudo 
    mysql   ALL=(ALL)       NOPASSWD: /usr/sbin/ip
 ```
-### 2.3 安装xtrabackup 
-
-### 2.4 启动Xenon组成集群
-      
+### 2.3 安装xtrabackup
+for centos
+```sh
+sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+sudo yum install percona-xtrabackup-24
+```
+### 2.4 启动Xenon组成集群   
 启动xenon，需要在所有节点执行
 
 切换到 mysql 用户下执行
 ```sh
- su - mysql
- cd /data/xenon/
- ./bin/xenon -c /etc/xenon/xenon.json  >./xenon.log 2>&1 &
+   su - mysql
+   cd /data/xenon/
+   ./bin/xenon -c /etc/xenon/xenon.json  >./xenon.log 2>&1 &
 ```
+此时如果MySQL实例没有启动，xenon将会启动MySQL
+
 /etc/xenon/xenon.json 配置文件内容如下  
 ```
    {
@@ -148,8 +153,8 @@ rpl_semi_sync_master_enabled =1
 
         "mysql":
         {
-                "admin":"tian",
-                "passwd":"8085782",
+                "admin":"root",
+                "passwd":"passwd",
                 "host":"127.0.0.1",
                 "port":3306,
                 "basedir":"/usr/local/mysql",
@@ -161,8 +166,8 @@ rpl_semi_sync_master_enabled =1
 
         "replication":
         {
-                "user":"tian",
-                "passwd":"8085782"
+                "user":"repl",
+                "passwd":"passwd"
         },
 
         "backup":
@@ -189,11 +194,12 @@ rpl_semi_sync_master_enabled =1
         }
 }
 ```
-添加xenon的成员,需要在所有节点执行
+添加xenon的成员,需要在所有节点执行，
+添加完成即可进行leader和follower的选举
 ```sh
 ./bin/xenoncli cluster add 172.18.0.160:8801,172.18.0.151:8801,172.18.0.152:8801
 ```
-## 3. 检验环境
+## 3. 检验是否正常启动（检查绑定的Ip是否可以提供写服务）
 ```sh
 [root@dzst160 bin]# mysql -utian -p -h172.18.0.200 -P 3336
 Enter password: 
@@ -237,8 +243,6 @@ Uptime:			1 hour 21 min 30 sec
 Threads: 3  Questions: 53  Slow queries: 0  Opens: 118  Flush tables: 2  Open tables: 10  Queries per second avg: 0.010
 --------------
 ```
-
-
 节点重建：
 ```sh
 -bash-4.2$ cd /data/xenon/
@@ -291,6 +295,6 @@ bin  raft.meta  xenon.json  xenon.log
 ```
 
  ## 4. 限制
-  1. MySQL  5.7 版本 GTID 半同步
+  1. MySQL 5.7 版本 GTID 半同步
   2. xenon, mysql跑在同一个帐号下， 这个帐号需要有Shell
   3. 使用mysqld_safe启用mysql
