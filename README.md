@@ -37,8 +37,8 @@ rpl_semi_sync_master_enabled =1
 ```sql
  CHANGE MASTER TO
  MASTER_HOST='172.18.0.152',
- MASTER_USER='tian',
- MASTER_PASSWORD='8085782',
+ MASTER_USER='repl',
+ MASTER_PASSWORD='passwd',
  MASTER_PORT=3336,
  MASTER_AUTO_POSITION = 1;
 ```
